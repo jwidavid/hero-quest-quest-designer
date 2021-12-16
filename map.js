@@ -179,6 +179,7 @@ class Grid {
 		this.createArtifact( imageId, coords.x, coords.y );
 
 		const img = document.getElementById( imageId );
+		
 
 		// drawImage at the drop point using the dropped image
 		this.ctx.drawImage(

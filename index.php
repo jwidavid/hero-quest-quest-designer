@@ -24,8 +24,8 @@
 				<input type="checkbox" id="snapToGrid" name="snapToGrid" onchange="toggleSnapToGrid();" value="true" checked="checked" />
 			<label for="snapToGrid">Snap to Grid (top left of token will snap to cursor square)</label>
 			<br><br>
-			<img draggable="true" ondragstart="onDragStart(event);" id="img1" class="artifact" width=33 height=33 src="icons/Creatures/SVG/Goblin.svg">
-			<img draggable="true" ondragstart="onDragStart(event);" id="img2" class="artifact" width=33 height=33 src="icons/Creatures/SVG/Orc.svg">
+			<img draggable="true" ondragstart="onDragStart(event);" id="img1" class="artifact" width=33 src="icons/Creatures/SVG/Goblin.svg">
+			<img draggable="true" ondragstart="onDragStart(event);" id="img2" class="artifact" width=33 src="icons/Creatures/SVG/Orc.svg">
 			</div>
 			<div class="col-md-8">
 				<canvas id="gameCanvas" width="911" height="666" ondragover="onDragOver(event);"></canvas>
