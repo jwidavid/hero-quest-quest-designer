@@ -5,7 +5,7 @@ class Grid {
 	constructor( tileSize ) {
 		this.canvas = undefined;
 		this.ctx = undefined;
-		this.tileSize = tileSize ? tileSize : 35;
+		this.tileSize = tileSize ? tileSize * window.devicePixelRatio : 35 * window.devicePixelRatio;
 		this.artifacts = [];
 		this.snapToGrid = true;
 	}
@@ -13,7 +13,13 @@ class Grid {
 	init() {
 		// set our config variables
 		this.canvas = document.getElementById( 'gameCanvas' );
+		this.canvas.width = 911 * window.devicePixelRatio;
+		this.canvas.height = 666 * window.devicePixelRatio;
+		this.canvas.style.width = `911px`;
+		this.canvas.style.height = `666px`;
+
 		this.ctx = this.canvas.getContext( '2d' );
+		this.ctx.imageSmoothingEnabled = false;
 	
 		this.canvas.onclick = ( e ) => this.onClick( e );
 		this.canvas.ondragover = ( e ) => e.preventDefault();
@@ -25,9 +31,9 @@ class Grid {
 	}
 
 	createArtifact( imageId, x, y ) {
-		// get dimensions of image
-		const w = document.getElementById( imageId ).width;
-		const h = document.getElementById( imageId ).height;
+		// get dimensions of image - add 1 to fix remnant line of image
+		const w = ( document.getElementById( imageId ).width * window.devicePixelRatio ) + 1;
+		const h = ( document.getElementById( imageId ).height * window.devicePixelRatio ) + 1;
 
 		// use coords and dimensions to copy data for what is under the artifact
 		const underlay = this.ctx.getImageData( x, y, w, h );
@@ -118,8 +124,8 @@ class Grid {
 
 	getCursorCoords( e ) {
 		const rect = this.canvas.getBoundingClientRect();
-		const cursorX = e.clientX - rect.left;
-		const cursorY = e.clientY - rect.top;
+		const cursorX = ( e.clientX - rect.left ) * window.devicePixelRatio;
+		const cursorY = ( e.clientY - rect.top ) * window.devicePixelRatio;
 
 		return { x: cursorX, y: cursorY };
 	}
@@ -134,7 +140,6 @@ class Grid {
 	}
 
 	onClick( e ) {
-
 		const cursorCoords = this.getCursorCoords( e );
 
 		// check if clicked on artifact
@@ -148,7 +153,9 @@ class Grid {
 		} );
 
 		// replace artifact with underlay
-		this.ctx.putImageData( artifact.underlay, artifact.gridX, artifact.gridY );
+		if ( artifact ) {
+			this.ctx.putImageData( artifact.underlay, artifact.gridX, artifact.gridY );
+		}
 	}
 
 	onDrop( e ) {
@@ -164,15 +171,23 @@ class Grid {
 		} else {
 			coords = this.getCursorCoords( e );
 			// image offset
-			coords.x = coords.x - e.dataTransfer.getData( 'grabbedX' );
-			coords.y = coords.y - e.dataTransfer.getData( 'grabbedY' );
+			coords.x = coords.x - ( e.dataTransfer.getData( 'grabbedX' ) * window.devicePixelRatio );
+			coords.y = coords.y - ( e.dataTransfer.getData( 'grabbedY' ) * window.devicePixelRatio );
 		}
 
 		// create the artifact
 		this.createArtifact( imageId, coords.x, coords.y );
-		
+
+		const img = document.getElementById( imageId );
+
 		// drawImage at the drop point using the dropped image
-		this.ctx.drawImage( document.getElementById( imageId ), coords.x, coords.y, 33, 33 );
+		this.ctx.drawImage(
+			img,
+			coords.x,
+			coords.y,
+			img.width * window.devicePixelRatio,
+			img.height * window.devicePixelRatio
+		);
 		e.dataTransfer.clearData();
 	}
 
