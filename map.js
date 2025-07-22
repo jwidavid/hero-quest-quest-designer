@@ -13,21 +13,43 @@ class Grid {
 	init() {
 		// set our config variables
 		this.canvas = document.getElementById( 'gameCanvas' );
-		this.canvas.width = 911 * window.devicePixelRatio;
-		this.canvas.height = 666 * window.devicePixelRatio;
-		this.canvas.style.width = `911px`;
-		this.canvas.style.height = `666px`;
-
 		this.ctx = this.canvas.getContext( '2d' );
 		this.ctx.imageSmoothingEnabled = false;
-	
+		this.resizeCanvas();
+		window.addEventListener( 'resize', () => this.resizeCanvas() );
+
 		this.canvas.onclick = ( e ) => this.onClick( e );
 		this.canvas.ondragover = ( e ) => e.preventDefault();
 		this.canvas.ondrop = ( e ) => this.onDrop( e );
 		this.canvas.onmousedown = ( e ) => this.onMouseDown( e );
+	}
 
-		this.createGrid();
-		this.createRooms();
+	resizeCanvas() {
+		const tilesY = 19;
+		const tilesX = 26;
+
+		const availableHeight = window.innerHeight - 100;
+		const availableWidth = this.canvas.parentElement.clientWidth;
+
+		const tileSizeHeight = availableHeight / tilesY;
+		const tileSizeWidth = availableWidth / tilesX;
+		const tileSize = Math.min( tileSizeHeight, tileSizeWidth );
+
+		const width = tileSize * tilesX;
+		const height = tileSize * tilesY;
+
+		this.tileSize = tileSize * window.devicePixelRatio;
+		this.canvas.width = width * window.devicePixelRatio;
+		this.canvas.height = height * window.devicePixelRatio;
+		this.canvas.style.width = `${width}px`;
+		this.canvas.style.height = `${height}px`;
+
+		// redraw grid and rooms on resize
+		if ( this.ctx ) {
+			this.ctx.clearRect( 0, 0, this.canvas.width, this.canvas.height );
+			this.createGrid();
+			this.createRooms();
+		}
 	}
 
 	createArtifact( imageId, x, y ) {
@@ -214,7 +236,7 @@ function onDragStart( e ) {
 }
 
 function toggleSnapToGrid() {
-	grid.snapToGrid = grid.snapToGrid ? false : true;
+	grid.snapToGrid = !grid.snapToGrid;
 }
   
 function getCoordsOverImg( e ) {
