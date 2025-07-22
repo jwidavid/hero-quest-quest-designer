@@ -199,13 +199,13 @@ class Grid {
                                 if ( isDoor ) {
                                         const cursor = this.getCursorCoords( e );
                                         if ( rotation % 180 === 0 ) {
-                                                // door running left/right - center on vertical grid line
-                                                const lineX = Math.round( cursor.x / this.tileSize ) * this.tileSize;
-                                                coords.x = lineX - ( this.tileSize / 2 );
-                                        } else {
-                                                // door running up/down - center on horizontal grid line
+                                                // door running left/right - center on horizontal grid line
                                                 const lineY = Math.round( cursor.y / this.tileSize ) * this.tileSize;
                                                 coords.y = lineY - ( this.tileSize / 2 );
+                                        } else {
+                                                // door running up/down - center on vertical grid line
+                                                const lineX = Math.round( cursor.x / this.tileSize ) * this.tileSize;
+                                                coords.x = lineX - ( this.tileSize / 2 );
                                         }
                                 }
                         } else {
@@ -245,11 +245,11 @@ class Grid {
                         if ( this.snapToGrid && isDoor ) {
                                 const cursor = this.getCursorCoords( e );
                                 if ( rotation % 180 === 0 ) {
-                                        const lineX = Math.round( cursor.x / this.tileSize ) * this.tileSize;
-                                        offsetX = lineX - ( drawW / 2 );
-                                } else {
                                         const lineY = Math.round( cursor.y / this.tileSize ) * this.tileSize;
                                         offsetY = lineY - ( drawH / 2 );
+                                } else {
+                                        const lineX = Math.round( cursor.x / this.tileSize ) * this.tileSize;
+                                        offsetX = lineX - ( drawW / 2 );
                                 }
                         }
 
