@@ -203,15 +203,23 @@ class Grid {
                 // create the artifact
                 this.createArtifact( imageId, coords.x, coords.y );
 
-                // drawImage at the drop point using the dropped image
-                this.ctx.drawImage(
-                        imgElem,
-                        coords.x,
-                        coords.y,
-                        this.tileSize * dims[0],
-                        this.tileSize * dims[1]
-                );
-		e.dataTransfer.clearData();
+                // determine natural aspect ratio in device pixels
+                let natW = imgElem.naturalWidth || imgElem.width;
+                let natH = imgElem.naturalHeight || imgElem.height;
+                natW *= window.devicePixelRatio;
+                natH *= window.devicePixelRatio;
+
+                const boundW = this.tileSize * dims[0];
+                const boundH = this.tileSize * dims[1];
+                const scale = Math.min( boundW / natW, boundH / natH );
+                const drawW = natW * scale;
+                const drawH = natH * scale;
+                const offsetX = coords.x + ( boundW - drawW ) / 2;
+                const offsetY = coords.y + ( boundH - drawH ) / 2;
+
+                // drawImage at the drop point using scaled dimensions
+                this.ctx.drawImage( imgElem, offsetX, offsetY, drawW, drawH );
+                e.dataTransfer.clearData();
 	}
 
 	onMouseDown( e ) {
