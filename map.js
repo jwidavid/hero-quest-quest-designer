@@ -10,25 +10,41 @@ class Grid {
 		this.snapToGrid = true;
 	}
 
-	init() {
-		// set our config variables
-		this.canvas = document.getElementById( 'gameCanvas' );
-		this.canvas.width = 911 * window.devicePixelRatio;
-		this.canvas.height = 666 * window.devicePixelRatio;
-		this.canvas.style.width = `911px`;
-		this.canvas.style.height = `666px`;
+        init() {
+                // set our config variables
+                this.canvas = document.getElementById( 'gameCanvas' );
+                this.ctx = this.canvas.getContext( '2d' );
+                this.ctx.imageSmoothingEnabled = false;
+                this.resizeCanvas();
+                window.addEventListener( 'resize', () => this.resizeCanvas() );
 
-		this.ctx = this.canvas.getContext( '2d' );
-		this.ctx.imageSmoothingEnabled = false;
-	
-		this.canvas.onclick = ( e ) => this.onClick( e );
-		this.canvas.ondragover = ( e ) => e.preventDefault();
-		this.canvas.ondrop = ( e ) => this.onDrop( e );
-		this.canvas.onmousedown = ( e ) => this.onMouseDown( e );
+                this.canvas.onclick = ( e ) => this.onClick( e );
+                this.canvas.ondragover = ( e ) => e.preventDefault();
+                this.canvas.ondrop = ( e ) => this.onDrop( e );
+                this.canvas.onmousedown = ( e ) => this.onMouseDown( e );
+        }
 
-		this.createGrid();
-		this.createRooms();
-	}
+        resizeCanvas() {
+                const tilesY = 19;
+                const tilesX = 26;
+
+                const availableHeight = window.innerHeight - 100;
+                const tileSize = availableHeight / tilesY;
+                const width = tileSize * tilesX;
+
+                this.tileSize = tileSize * window.devicePixelRatio;
+                this.canvas.width = width * window.devicePixelRatio;
+                this.canvas.height = availableHeight * window.devicePixelRatio;
+                this.canvas.style.width = `${width}px`;
+                this.canvas.style.height = `${availableHeight}px`;
+
+                // redraw grid and rooms on resize
+                if ( this.ctx ) {
+                        this.ctx.clearRect( 0, 0, this.canvas.width, this.canvas.height );
+                        this.createGrid();
+                        this.createRooms();
+                }
+        }
 
 	createArtifact( imageId, x, y ) {
 		// get dimensions of image - add 1 to fix remnant line of image

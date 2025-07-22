@@ -59,7 +59,7 @@ foreach ($categories as $cat) {
                 </div>
             </div>
             <div class="col-md-8">
-                <canvas id="gameCanvas" width="911" height="666" ondragover="onDragOver(event);"></canvas>
+                <canvas id="gameCanvas" ondragover="onDragOver(event);"></canvas>
             </div>
         </div>
     </div>
