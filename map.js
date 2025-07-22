@@ -52,14 +52,14 @@ class Grid {
 		}
 	}
 
-       createArtifact( imageId, x, y ) {
-               const imgElem = document.getElementById( imageId );
-               const dims = imgElem.dataset.dim.split( 'x' );
-               const w = ( this.tileSize * parseInt( dims[0] ) ) + 2;
-               const h = ( this.tileSize * parseInt( dims[1] ) ) + 2;
+	createArtifact( imageId, x, y ) {
+		const imgElem = document.getElementById( imageId );
+		const dims = imgElem.dataset.dim.split( 'x' );
+		const w = ( this.tileSize * parseInt( dims[0] ) ) + 2;
+		const h = ( this.tileSize * parseInt( dims[1] ) ) + 2;
 
 		// use coords and dimensions to copy data for what is under the artifact
-               const underlay = this.ctx.getImageData( x, y, w, h );
+		const underlay = this.ctx.getImageData( x, y, w, h );
 
 		this.artifacts.push( {
 			gridX: x,
@@ -175,66 +175,66 @@ class Grid {
 			)
 		} );
 
-                // replace artifact with underlay and remove it from the list
-                if ( artifact ) {
-                        this.ctx.putImageData( artifact.underlay, artifact.gridX, artifact.gridY );
-                        this.artifacts = this.artifacts.filter( a => a !== artifact );
-                }
+		// replace artifact with underlay and remove it from the list
+		if ( artifact ) {
+			this.ctx.putImageData( artifact.underlay, artifact.gridX, artifact.gridY );
+			this.artifacts = this.artifacts.filter( a => a !== artifact );
+		}
 	}
 
 	onDrop( e ) {
 		e.preventDefault();
 
-                const imageId = e.dataTransfer.getData( 'image' );
-                const imgElem = document.getElementById( imageId );
-                const dims = imgElem.dataset.dim.split( 'x' ).map( d => parseInt( d ) );
-                let coords;
-		
-                if ( this.snapToGrid ) {
-                        // snap to grid
-                        coords = this.getTileCoords( e );
-                } else {
-                        coords = this.getCursorCoords( e );
-                        // image offset
-                        coords.x = coords.x - ( e.dataTransfer.getData( 'grabbedX' ) * window.devicePixelRatio );
-                        coords.y = coords.y - ( e.dataTransfer.getData( 'grabbedY' ) * window.devicePixelRatio );
-                }
+			const imageId = e.dataTransfer.getData( 'image' );
+			const imgElem = document.getElementById( imageId );
+			const dims = imgElem.dataset.dim.split( 'x' ).map( d => parseInt( d ) );
+			let coords;
 
-                // create the artifact before clearing the grid so that the
-                // original grid lines can be restored when the icon is removed
-                this.createArtifact( imageId, coords.x - 1, coords.y - 1 );
+			if ( this.snapToGrid ) {
+				// snap to grid
+				coords = this.getTileCoords( e );
+			} else {
+				coords = this.getCursorCoords( e );
+				// image offset
+				coords.x = coords.x - ( e.dataTransfer.getData( 'grabbedX' ) * window.devicePixelRatio );
+				coords.y = coords.y - ( e.dataTransfer.getData( 'grabbedY' ) * window.devicePixelRatio );
+			}
 
-                if ( this.snapToGrid ) {
-                        this.ctx.clearRect( coords.x, coords.y, this.tileSize * dims[0] - 2, this.tileSize * dims[1] - 2 );
-                }
+			// create the artifact before clearing the grid so that the
+			// original grid lines can be restored when the icon is removed
+			this.createArtifact( imageId, coords.x - 1, coords.y - 1 );
 
-                // determine natural aspect ratio in device pixels
-                let natW = imgElem.naturalWidth || imgElem.width;
-                let natH = imgElem.naturalHeight || imgElem.height;
-                natW *= window.devicePixelRatio;
-                natH *= window.devicePixelRatio;
+			if ( this.snapToGrid ) {
+				this.ctx.clearRect( coords.x, coords.y, this.tileSize * dims[0] - 2, this.tileSize * dims[1] - 2 );
+			}
 
-               // apply a small margin so the icon does not bleed over grid lines
-               const margin = 2; // device pixels
+			// determine natural aspect ratio in device pixels
+			let natW = imgElem.naturalWidth || imgElem.width;
+			let natH = imgElem.naturalHeight || imgElem.height;
+			natW *= window.devicePixelRatio;
+			natH *= window.devicePixelRatio;
 
-               const boundW = this.tileSize * dims[0] - margin;
-               const boundH = this.tileSize * dims[1] - margin;
-               const scale = Math.min( boundW / natW, boundH / natH );
-               const drawW = natW * scale;
-               const drawH = natH * scale;
+			// apply a small margin so the icon does not bleed over grid lines
+			const margin = 2; // device pixels
 
-               // center icon within the grid cell accounting for the margin
-               const offsetX = coords.x + ( ( this.tileSize * dims[0] - drawW ) / 2 );
-               const offsetY = coords.y + ( ( this.tileSize * dims[1] - drawH ) / 2 );
+			const boundW = this.tileSize * dims[0] - margin;
+			const boundH = this.tileSize * dims[1] - margin;
+			const scale = Math.min( boundW / natW, boundH / natH );
+			const drawW = natW * scale;
+			const drawH = natH * scale;
 
-                // drawImage at the drop point using scaled dimensions and rotation
-                const rotation = parseFloat( e.dataTransfer.getData( 'rotation' ) || '0' );
-                this.ctx.save();
-                this.ctx.translate( offsetX + drawW / 2, offsetY + drawH / 2 );
-                this.ctx.rotate( rotation * Math.PI / 180 );
-                this.ctx.drawImage( imgElem, -drawW / 2, -drawH / 2, drawW, drawH );
-                this.ctx.restore();
-                e.dataTransfer.clearData();
+			// center icon within the grid cell accounting for the margin
+			const offsetX = coords.x + ( ( this.tileSize * dims[0] - drawW ) / 2 );
+			const offsetY = coords.y + ( ( this.tileSize * dims[1] - drawH ) / 2 );
+
+			// drawImage at the drop point using scaled dimensions and rotation
+			const rotation = parseFloat( e.dataTransfer.getData( 'rotation' ) || '0' );
+			this.ctx.save();
+			this.ctx.translate( offsetX + drawW / 2, offsetY + drawH / 2 );
+			this.ctx.rotate( rotation * Math.PI / 180 );
+			this.ctx.drawImage( imgElem, -drawW / 2, -drawH / 2, drawW, drawH );
+			this.ctx.restore();
+			e.dataTransfer.clearData();
         }
 
 	onMouseDown( e ) {
@@ -252,13 +252,13 @@ class Grid {
 }
 
 function onDragStart( e ) {
-        const coords = getCoordsOverImg( e );
-        const assetId = e.target.dataset.assetId || e.target.id;
-        const rotation = e.target.dataset.rotation || 0;
-        e.dataTransfer.setData( 'image', assetId );
-        e.dataTransfer.setData( 'rotation', rotation );
-        e.dataTransfer.setData( 'grabbedX', coords.x );
-        e.dataTransfer.setData( 'grabbedY', coords.y );
+	const coords = getCoordsOverImg( e );
+	const assetId = e.target.dataset.assetId || e.target.id;
+	const rotation = e.target.dataset.rotation || 0;
+	e.dataTransfer.setData( 'image', assetId );
+	e.dataTransfer.setData( 'rotation', rotation );
+	e.dataTransfer.setData( 'grabbedX', coords.x );
+	e.dataTransfer.setData( 'grabbedY', coords.y );
 }
 
 function toggleSnapToGrid() {
@@ -275,44 +275,48 @@ function getCoordsOverImg( e ) {
 }
 
 function selectAsset( elem ) {
-        const preview = document.getElementById( 'previewImg' );
+	const preview = document.getElementById( 'previewImg' );
 
-        preview.onload = () => adjustPreviewSize( preview );
-        preview.src = elem.src;
-        preview.dataset.assetId = elem.id;
-        preview.dataset.dim = elem.dataset.dim;
-        preview.dataset.rotation = 0;
-        preview.style.transform = 'rotate(0deg)';
-        preview.style.display = 'inline';
+	preview.onload = () => adjustPreviewSize( preview );
+	preview.src = elem.src;
+	preview.dataset.assetId = elem.id;
+	preview.dataset.dim = elem.dataset.dim;
+	preview.dataset.rotation = 0;
+	preview.style.transform = 'rotate(0deg)';
+	preview.style.display = 'inline';
 
-        if ( preview.complete ) {
-                adjustPreviewSize( preview );
-        }
+	if ( preview.complete ) {
+		adjustPreviewSize( preview );
+	}
 }
 
 function rotatePreview( dir ) {
-        const preview = document.getElementById( 'previewImg' );
-        if ( !preview.dataset.assetId ) return;
-        let val = parseInt( preview.dataset.rotation || '0', 10 );
-        val = ( val + dir * 90 + 360 ) % 360;
-        preview.dataset.rotation = val;
-        preview.style.transform = `rotate(${val}deg)`;
+	const preview = document.getElementById( 'previewImg' );
+	if ( !preview.dataset.assetId ) return;
+	let val = parseInt( preview.dataset.rotation || '0', 10 );
+	val = ( val + dir * 90 + 360 ) % 360;
+	preview.dataset.rotation = val;
+	preview.style.transform = `rotate(${val}deg)`;
 }
 
 function adjustPreviewSize( imgElem ) {
-        if ( !imgElem.dataset.dim ) return;
-        const dims = imgElem.dataset.dim.split( 'x' ).map( d => parseInt( d ) );
-        const natW = imgElem.naturalWidth * window.devicePixelRatio;
-        const natH = imgElem.naturalHeight * window.devicePixelRatio;
-        const margin = 2;
-        const tileSize = grid ? grid.tileSize : 35 * window.devicePixelRatio;
-        const boundW = tileSize * dims[0] - margin;
-        const boundH = tileSize * dims[1] - margin;
-        const scale = Math.min( boundW / natW, boundH / natH );
-        const drawW = natW * scale;
-        const drawH = natH * scale;
-        imgElem.style.width = ( drawW / window.devicePixelRatio ) + 'px';
-        imgElem.style.height = ( drawH / window.devicePixelRatio ) + 'px';
+	if ( !imgElem.dataset.dim ) return;
+
+	const dims = imgElem.dataset.dim.split( 'x' ).map( d => parseInt( d ) );
+	const natW = imgElem.naturalWidth; // Do NOT multiply by devicePixelRatio
+	const natH = imgElem.naturalHeight;
+	const margin = 2;
+	const tileSize = grid ? grid.tileSize / window.devicePixelRatio : 35; // Convert back to CSS px
+
+	const boundW = tileSize * dims[0] - margin;
+	const boundH = tileSize * dims[1] - margin;
+
+	const scale = Math.min( boundW / natW, boundH / natH );
+	const drawW = natW * scale;
+	const drawH = natH * scale;
+
+	imgElem.style.width = drawW + 'px';
+	imgElem.style.height = drawH + 'px';
 }
 
 document.addEventListener( 'DOMContentLoaded', () => {
