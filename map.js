@@ -188,17 +188,32 @@ class Grid {
 			const imageId = e.dataTransfer.getData( 'image' );
 			const imgElem = document.getElementById( imageId );
 			const dims = imgElem.dataset.dim.split( 'x' ).map( d => parseInt( d ) );
-			let coords;
+                        const rotation = parseFloat( e.dataTransfer.getData( 'rotation' ) || '0' );
+                        const isDoor = /Door\.svg/i.test( imgElem.src );
+                        let coords;
 
-			if ( this.snapToGrid ) {
-				// snap to grid
-				coords = this.getTileCoords( e );
-			} else {
-				coords = this.getCursorCoords( e );
-				// image offset
-				coords.x = coords.x - ( e.dataTransfer.getData( 'grabbedX' ) * window.devicePixelRatio );
-				coords.y = coords.y - ( e.dataTransfer.getData( 'grabbedY' ) * window.devicePixelRatio );
-			}
+                        if ( this.snapToGrid ) {
+                                // snap to grid
+                                coords = this.getTileCoords( e );
+
+                                if ( isDoor ) {
+                                        const cursor = this.getCursorCoords( e );
+                                        if ( rotation % 180 === 0 ) {
+                                                // door running left/right - center on horizontal grid line
+                                                const lineY = Math.round( cursor.y / this.tileSize ) * this.tileSize;
+                                                coords.y = lineY - ( this.tileSize / 2 );
+                                        } else {
+                                                // door running up/down - center on vertical grid line
+                                                const lineX = Math.round( cursor.x / this.tileSize ) * this.tileSize;
+                                                coords.x = lineX - ( this.tileSize / 2 );
+                                        }
+                                }
+                        } else {
+                                coords = this.getCursorCoords( e );
+                                // image offset
+                                coords.x = coords.x - ( e.dataTransfer.getData( 'grabbedX' ) * window.devicePixelRatio );
+                                coords.y = coords.y - ( e.dataTransfer.getData( 'grabbedY' ) * window.devicePixelRatio );
+                        }
 
 			// create the artifact before clearing the grid so that the
 			// original grid lines can be restored when the icon is removed
@@ -218,17 +233,27 @@ class Grid {
 			const margin = 2; // device pixels
 
 			const boundW = this.tileSize * dims[0] - margin;
-			const boundH = this.tileSize * dims[1] - margin;
-			const scale = Math.min( boundW / natW, boundH / natH );
-			const drawW = natW * scale;
-			const drawH = natH * scale;
+                        const boundH = this.tileSize * dims[1] - margin;
+                        const scale = Math.min( boundW / natW, boundH / natH );
+                        const drawW = natW * scale;
+                        const drawH = natH * scale;
 
-			// center icon within the grid cell accounting for the margin
-			const offsetX = coords.x + ( ( this.tileSize * dims[0] - drawW ) / 2 );
-			const offsetY = coords.y + ( ( this.tileSize * dims[1] - drawH ) / 2 );
+                        // center icon within the grid cell accounting for the margin
+                        let offsetX = coords.x + ( ( this.tileSize * dims[0] - drawW ) / 2 );
+                        let offsetY = coords.y + ( ( this.tileSize * dims[1] - drawH ) / 2 );
 
-			// drawImage at the drop point using scaled dimensions and rotation
-			const rotation = parseFloat( e.dataTransfer.getData( 'rotation' ) || '0' );
+                        if ( this.snapToGrid && isDoor ) {
+                                const cursor = this.getCursorCoords( e );
+                                if ( rotation % 180 === 0 ) {
+                                        const lineY = Math.round( cursor.y / this.tileSize ) * this.tileSize;
+                                        offsetY = lineY - ( drawH / 2 );
+                                } else {
+                                        const lineX = Math.round( cursor.x / this.tileSize ) * this.tileSize;
+                                        offsetX = lineX - ( drawW / 2 );
+                                }
+                        }
+
+                        // drawImage at the drop point using scaled dimensions and rotation
 			this.ctx.save();
 			this.ctx.translate( offsetX + drawW / 2, offsetY + drawH / 2 );
 			this.ctx.rotate( rotation * Math.PI / 180 );
