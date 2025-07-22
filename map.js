@@ -214,13 +214,18 @@ class Grid {
                 natW *= window.devicePixelRatio;
                 natH *= window.devicePixelRatio;
 
-                const boundW = this.tileSize * dims[0];
-                const boundH = this.tileSize * dims[1];
-                const scale = Math.min( boundW / natW, boundH / natH );
-                const drawW = natW * scale;
-                const drawH = natH * scale;
-                const offsetX = coords.x + ( boundW - drawW ) / 2;
-                const offsetY = coords.y + ( boundH - drawH ) / 2;
+               // apply a small margin so the icon does not bleed over grid lines
+               const margin = 2; // device pixels
+
+               const boundW = this.tileSize * dims[0] - margin;
+               const boundH = this.tileSize * dims[1] - margin;
+               const scale = Math.min( boundW / natW, boundH / natH );
+               const drawW = natW * scale;
+               const drawH = natH * scale;
+
+               // center icon within the grid cell accounting for the margin
+               const offsetX = coords.x + ( ( this.tileSize * dims[0] - drawW ) / 2 );
+               const offsetY = coords.y + ( ( this.tileSize * dims[1] - drawH ) / 2 );
 
                 // drawImage at the drop point using scaled dimensions
                 this.ctx.drawImage( imgElem, offsetX, offsetY, drawW, drawH );
