@@ -52,10 +52,11 @@ class Grid {
 		}
 	}
 
-	createArtifact( imageId, x, y ) {
-		// get dimensions of image - add 1 to fix remnant line of image
-		const w = ( document.getElementById( imageId ).width * window.devicePixelRatio ) + 1;
-		const h = ( document.getElementById( imageId ).height * window.devicePixelRatio ) + 1;
+        createArtifact( imageId, x, y ) {
+                const imgElem = document.getElementById( imageId );
+                const dims = imgElem.dataset.dim.split( 'x' );
+                const w = ( this.tileSize * parseInt( dims[0] ) ) + 1;
+                const h = ( this.tileSize * parseInt( dims[1] ) ) + 1;
 
 		// use coords and dimensions to copy data for what is under the artifact
 		const underlay = this.ctx.getImageData( x, y, w, h );
@@ -183,13 +184,15 @@ class Grid {
 	onDrop( e ) {
 		e.preventDefault();
 
-		const imageId = e.dataTransfer.getData( 'image' );
-		let coords;
+                const imageId = e.dataTransfer.getData( 'image' );
+                const imgElem = document.getElementById( imageId );
+                const dims = imgElem.dataset.dim.split( 'x' ).map( d => parseInt( d ) );
+                let coords;
 		
 		if ( this.snapToGrid ) {
 			// snap to grid
-			coords = this.getTileCoords( e );
-			this.ctx.clearRect( coords.x, coords.y, this.tileSize - 2, this.tileSize - 2 );
+                        coords = this.getTileCoords( e );
+                        this.ctx.clearRect( coords.x, coords.y, this.tileSize * dims[0] - 2, this.tileSize * dims[1] - 2 );
 		} else {
 			coords = this.getCursorCoords( e );
 			// image offset
@@ -197,20 +200,17 @@ class Grid {
 			coords.y = coords.y - ( e.dataTransfer.getData( 'grabbedY' ) * window.devicePixelRatio );
 		}
 
-		// create the artifact
-		this.createArtifact( imageId, coords.x, coords.y );
+                // create the artifact
+                this.createArtifact( imageId, coords.x, coords.y );
 
-		const img = document.getElementById( imageId );
-		
-
-		// drawImage at the drop point using the dropped image
-		this.ctx.drawImage(
-			img,
-			coords.x,
-			coords.y,
-			img.width * window.devicePixelRatio,
-			img.height * window.devicePixelRatio
-		);
+                // drawImage at the drop point using the dropped image
+                this.ctx.drawImage(
+                        imgElem,
+                        coords.x,
+                        coords.y,
+                        this.tileSize * dims[0],
+                        this.tileSize * dims[1]
+                );
 		e.dataTransfer.clearData();
 	}
 

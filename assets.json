@@ -1,0 +1,22 @@
+[
+  {"image": "icons/Creatures/SVG/Abomination.svg", "title": "Abomination", "dimensions": "1x1"},
+  {"image": "icons/Creatures/SVG/DreadWarrior.svg", "title": "Dread Warrior", "dimensions": "1x1"},
+  {"image": "icons/Creatures/SVG/Gargoyle.svg", "title": "Gargoyle", "dimensions": "1x1"},
+  {"image": "icons/Creatures/SVG/Goblin.svg", "title": "Goblin", "dimensions": "1x1"},
+  {"image": "icons/Creatures/SVG/Mummy.svg", "title": "Mummy", "dimensions": "1x1"},
+  {"image": "icons/Creatures/SVG/Orc.svg", "title": "Orc", "dimensions": "1x1"},
+  {"image": "icons/Creatures/SVG/Zombie.svg", "title": "Zombie", "dimensions": "1x1"},
+  {"image": "icons/Furniture/SVG/AlchemistsBench.svg", "title": "Alchemists Bench", "dimensions": "1x1"},
+  {"image": "icons/Furniture/SVG/Bookshelf.svg", "title": "Bookshelf", "dimensions": "1x1"},
+  {"image": "icons/Furniture/SVG/Chest.svg", "title": "Chest", "dimensions": "1x1"},
+  {"image": "icons/Furniture/SVG/Rack.svg", "title": "Rack", "dimensions": "1x1"},
+  {"image": "icons/Furniture/SVG/SorcerersTable.svg", "title": "Sorcerers Table", "dimensions": "1x1"},
+  {"image": "icons/Furniture/SVG/Table.svg", "title": "Table", "dimensions": "1x1"},
+  {"image": "icons/Furniture/SVG/WeaponsRack.svg", "title": "Weapons Rack", "dimensions": "1x1"},
+  {"image": "icons/Tiles/SVG/BlockedWall_Double.svg", "title": "Blocked Wall Double", "dimensions": "2x1"},
+  {"image": "icons/Tiles/SVG/BlockedWall_Single.svg", "title": "Blocked Wall Single", "dimensions": "1x1"},
+  {"image": "icons/Tiles/SVG/Door.svg", "title": "Door", "dimensions": "1x1"},
+  {"image": "icons/Tiles/SVG/SecretDoor.svg", "title": "Secret Door", "dimensions": "1x1"},
+  {"image": "icons/Tiles/SVG/Staircase.svg", "title": "Staircase", "dimensions": "1x1"},
+  {"image": "icons/Traps/SVG/TrapPit.svg", "title": "Trap Pit", "dimensions": "1x1"}
+]
