@@ -68,12 +68,12 @@ ksort($categories);
 				}
 				?>
             </div>
-            <div id="previewBox" class="border mt-3 p-2 text-center" style="min-height:120px;">
-                <img id="previewImg" style="display:none;" draggable="true" ondragstart="onDragStart(event);">
-                <div class="mt-2">
+            <div id="previewBox" class="border mt-3 p-3 text-center" style="min-height:120px;">
+                <div id="previewControls" class="mb-2">
                     <button class="btn btn-light" onclick="rotatePreview(-1)" title="Rotate Left"><i class="bi-arrow-counterclockwise"></i></button>
                     <button class="btn btn-light" onclick="rotatePreview(1)" title="Rotate Right"><i class="bi-arrow-clockwise"></i></button>
                 </div>
+                <img id="previewImg" style="display:none;" draggable="true" ondragstart="onDragStart(event);">
             </div>
         </div>
         <div class="col-md-9">
