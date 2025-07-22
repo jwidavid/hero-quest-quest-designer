@@ -276,28 +276,47 @@ function getCoordsOverImg( e ) {
 
 function selectAsset( elem ) {
         const preview = document.getElementById( 'previewImg' );
-        const rotateInput = document.getElementById( 'rotationInput' );
-        const dims = elem.dataset.dim.split( 'x' ).map( d => parseInt( d ) );
-        const size = grid ? grid.tileSize / window.devicePixelRatio : 35;
 
+        preview.onload = () => adjustPreviewSize( preview );
         preview.src = elem.src;
         preview.dataset.assetId = elem.id;
         preview.dataset.dim = elem.dataset.dim;
         preview.dataset.rotation = 0;
-        preview.style.width = ( size * dims[0] ) + 'px';
-        preview.style.height = ( size * dims[1] ) + 'px';
         preview.style.transform = 'rotate(0deg)';
         preview.style.display = 'inline';
-        rotateInput.value = 0;
+
+        if ( preview.complete ) {
+                adjustPreviewSize( preview );
+        }
 }
 
-function updatePreviewRotation( val ) {
+function rotatePreview( dir ) {
         const preview = document.getElementById( 'previewImg' );
+        if ( !preview.dataset.assetId ) return;
+        let val = parseInt( preview.dataset.rotation || '0', 10 );
+        val = ( val + dir * 90 + 360 ) % 360;
         preview.dataset.rotation = val;
         preview.style.transform = `rotate(${val}deg)`;
 }
 
+function adjustPreviewSize( imgElem ) {
+        if ( !imgElem.dataset.dim ) return;
+        const dims = imgElem.dataset.dim.split( 'x' ).map( d => parseInt( d ) );
+        const natW = imgElem.naturalWidth * window.devicePixelRatio;
+        const natH = imgElem.naturalHeight * window.devicePixelRatio;
+        const margin = 2;
+        const tileSize = grid ? grid.tileSize : 35 * window.devicePixelRatio;
+        const boundW = tileSize * dims[0] - margin;
+        const boundH = tileSize * dims[1] - margin;
+        const scale = Math.min( boundW / natW, boundH / natH );
+        const drawW = natW * scale;
+        const drawH = natH * scale;
+        imgElem.style.width = ( drawW / window.devicePixelRatio ) + 'px';
+        imgElem.style.height = ( drawH / window.devicePixelRatio ) + 'px';
+}
+
 document.addEventListener( 'DOMContentLoaded', () => {
-	grid = new Grid();
-	grid.init();
+        grid = new Grid();
+        grid.init();
+        window.addEventListener( 'resize', () => adjustPreviewSize( document.getElementById( 'previewImg' ) ) );
 } );
