@@ -52,10 +52,11 @@ class Grid {
 		}
 	}
 
-	createArtifact( imageId, x, y ) {
-		// get dimensions of image - add 1 to fix remnant line of image
-		const w = ( document.getElementById( imageId ).width * window.devicePixelRatio ) + 1;
-		const h = ( document.getElementById( imageId ).height * window.devicePixelRatio ) + 1;
+        createArtifact( imageId, x, y ) {
+                const imgElem = document.getElementById( imageId );
+                const dims = imgElem.dataset.dim.split( 'x' );
+                const w = ( this.tileSize * parseInt( dims[0] ) ) + 1;
+                const h = ( this.tileSize * parseInt( dims[1] ) ) + 1;
 
 		// use coords and dimensions to copy data for what is under the artifact
 		const underlay = this.ctx.getImageData( x, y, w, h );
@@ -183,13 +184,15 @@ class Grid {
 	onDrop( e ) {
 		e.preventDefault();
 
-		const imageId = e.dataTransfer.getData( 'image' );
-		let coords;
+                const imageId = e.dataTransfer.getData( 'image' );
+                const imgElem = document.getElementById( imageId );
+                const dims = imgElem.dataset.dim.split( 'x' ).map( d => parseInt( d ) );
+                let coords;
 		
 		if ( this.snapToGrid ) {
 			// snap to grid
-			coords = this.getTileCoords( e );
-			this.ctx.clearRect( coords.x, coords.y, this.tileSize - 2, this.tileSize - 2 );
+                        coords = this.getTileCoords( e );
+                        this.ctx.clearRect( coords.x, coords.y, this.tileSize * dims[0] - 2, this.tileSize * dims[1] - 2 );
 		} else {
 			coords = this.getCursorCoords( e );
 			// image offset
@@ -197,21 +200,26 @@ class Grid {
 			coords.y = coords.y - ( e.dataTransfer.getData( 'grabbedY' ) * window.devicePixelRatio );
 		}
 
-		// create the artifact
-		this.createArtifact( imageId, coords.x, coords.y );
+                // create the artifact
+                this.createArtifact( imageId, coords.x, coords.y );
 
-		const img = document.getElementById( imageId );
-		
+                // determine natural aspect ratio in device pixels
+                let natW = imgElem.naturalWidth || imgElem.width;
+                let natH = imgElem.naturalHeight || imgElem.height;
+                natW *= window.devicePixelRatio;
+                natH *= window.devicePixelRatio;
 
-		// drawImage at the drop point using the dropped image
-		this.ctx.drawImage(
-			img,
-			coords.x,
-			coords.y,
-			img.width * window.devicePixelRatio,
-			img.height * window.devicePixelRatio
-		);
-		e.dataTransfer.clearData();
+                const boundW = this.tileSize * dims[0];
+                const boundH = this.tileSize * dims[1];
+                const scale = Math.min( boundW / natW, boundH / natH );
+                const drawW = natW * scale;
+                const drawH = natH * scale;
+                const offsetX = coords.x + ( boundW - drawW ) / 2;
+                const offsetY = coords.y + ( boundH - drawH ) / 2;
+
+                // drawImage at the drop point using scaled dimensions
+                this.ctx.drawImage( imgElem, offsetX, offsetY, drawW, drawH );
+                e.dataTransfer.clearData();
 	}
 
 	onMouseDown( e ) {

@@ -1,7 +1,20 @@
 <?php
 
-$categories = array_filter(glob('icons/*'), 'is_dir');
+// Load asset definitions from JSON
+$assets = json_decode(file_get_contents('assets.json'), true);
 $iconIndex = 1;
+
+// Group assets by category derived from file path
+$categories = [];
+foreach ($assets as $asset) {
+    $parts = explode('/', $asset['image']);
+    $category = $parts[1] ?? 'Other';
+    if (!isset($categories[$category])) {
+        $categories[$category] = [];
+    }
+    $categories[$category][] = $asset;
+}
+ksort($categories);
 
 ?>
 
@@ -27,33 +40,30 @@ $iconIndex = 1;
             <label for="snapToGrid">Snap to Grid</label>
             <br><br>
             <div class="accordion" id="iconAccordion">
-				<?php
-				foreach ($categories as $cat) {
-					$category = basename($cat);
-					$files = glob("$cat/SVG/*.svg");
-					sort($files);
-					$catId = strtolower($category);
-					?>
+                                <?php
+                                foreach ($categories as $category => $files) {
+                                        $catId = strtolower($category);
+                                        ?>
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="heading<?= $catId ?>">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?= $catId ?>" aria-expanded="false" aria-controls="collapse<?= $catId ?>">
-								<?= htmlspecialchars($category) ?>
+                                                                <?= htmlspecialchars($category) ?>
                             </button>
                         </h2>
                         <div id="collapse<?= $catId ?>" class="accordion-collapse collapse" aria-labelledby="heading<?= $catId ?>" data-bs-parent="#iconAccordion">
                             <div class="accordion-body">
-								<?php
-								foreach ($files as $file) {
-									$id = 'img' . $iconIndex++;
-									?>
-                                    <img draggable="true" ondragstart="onDragStart(event);" id="<?= $id ?>" class="artifact" width="33" src="<?= $file ?>">
-									<?php
-								}
-								?>
+                                                                <?php
+                                                                foreach ($files as $file) {
+                                                                        $id = 'img' . $iconIndex++;
+                                                                        ?>
+                                    <img draggable="true" ondragstart="onDragStart(event);" id="<?= $id ?>" class="artifact" width="33" data-dim="<?= $file['dimensions'] ?>" src="<?= $file['image'] ?>" title="<?= htmlspecialchars($file['title']) ?>">
+                                                                        <?php
+                                                                }
+                                                                ?>
                             </div>
                         </div>
                     </div>
-					<?php
+                                        <?php
 				}
 				?>
             </div>
