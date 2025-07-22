@@ -22,6 +22,7 @@ ksort($categories);
 <head>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         canvas {
             background: #f8f8f8;
@@ -56,7 +57,7 @@ ksort($categories);
                                                                 foreach ($files as $file) {
                                                                         $id = 'img' . $iconIndex++;
                                                                         ?>
-                                    <img draggable="true" ondragstart="onDragStart(event);" id="<?= $id ?>" class="artifact" width="33" data-dim="<?= $file['dimensions'] ?>" src="<?= $file['image'] ?>" title="<?= htmlspecialchars($file['title']) ?>">
+                                    <img draggable="true" ondragstart="onDragStart(event);" onclick="selectAsset(this);" id="<?= $id ?>" class="artifact" width="33" data-dim="<?= $file['dimensions'] ?>" src="<?= $file['image'] ?>" title="<?= htmlspecialchars($file['title']) ?>">
                                                                         <?php
                                                                 }
                                                                 ?>
@@ -66,6 +67,13 @@ ksort($categories);
                                         <?php
 				}
 				?>
+            </div>
+            <div id="previewBox" class="border mt-3 p-3 text-center" style="min-height:120px;">
+                <div id="previewControls" class="mb-2">
+                    <button class="btn btn-light" onclick="rotatePreview(-1)" title="Rotate Left"><i class="bi-arrow-counterclockwise"></i></button>
+                    <button class="btn btn-light" onclick="rotatePreview(1)" title="Rotate Right"><i class="bi-arrow-clockwise"></i></button>
+                </div>
+                <img id="previewImg" style="display:none;" draggable="true" ondragstart="onDragStart(event);">
             </div>
         </div>
         <div class="col-md-9">
