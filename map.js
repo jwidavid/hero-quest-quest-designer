@@ -52,14 +52,14 @@ class Grid {
 		}
 	}
 
-        createArtifact( imageId, x, y ) {
-                const imgElem = document.getElementById( imageId );
-                const dims = imgElem.dataset.dim.split( 'x' );
-                const w = ( this.tileSize * parseInt( dims[0] ) ) + 1;
-                const h = ( this.tileSize * parseInt( dims[1] ) ) + 1;
+       createArtifact( imageId, x, y ) {
+               const imgElem = document.getElementById( imageId );
+               const dims = imgElem.dataset.dim.split( 'x' );
+               const w = ( this.tileSize * parseInt( dims[0] ) ) + 2;
+               const h = ( this.tileSize * parseInt( dims[1] ) ) + 2;
 
 		// use coords and dimensions to copy data for what is under the artifact
-		const underlay = this.ctx.getImageData( x, y, w, h );
+               const underlay = this.ctx.getImageData( x, y, w, h );
 
 		this.artifacts.push( {
 			gridX: x,
@@ -202,7 +202,7 @@ class Grid {
 
                 // create the artifact before clearing the grid so that the
                 // original grid lines can be restored when the icon is removed
-                this.createArtifact( imageId, coords.x, coords.y );
+                this.createArtifact( imageId, coords.x - 1, coords.y - 1 );
 
                 if ( this.snapToGrid ) {
                         this.ctx.clearRect( coords.x, coords.y, this.tileSize * dims[0] - 2, this.tileSize * dims[1] - 2 );
