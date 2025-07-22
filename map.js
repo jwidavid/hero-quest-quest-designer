@@ -12,11 +12,10 @@ class Grid {
 
 	init() {
 		// set our config variables
-		this.canvas = document.getElementById( 'gameCanvas' );
-		this.canvas.width = 911 * window.devicePixelRatio;
-		this.canvas.height = 666 * window.devicePixelRatio;
-		this.canvas.style.width = `911px`;
-		this.canvas.style.height = `666px`;
+                this.canvas = document.getElementById( 'gameCanvas' );
+                // adjust canvas dimensions based on its rendered size
+                this.canvas.width = this.canvas.clientWidth * window.devicePixelRatio;
+                this.canvas.height = this.canvas.clientHeight * window.devicePixelRatio;
 
 		this.ctx = this.canvas.getContext( '2d' );
 		this.ctx.imageSmoothingEnabled = false;
