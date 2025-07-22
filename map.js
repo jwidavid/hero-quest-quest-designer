@@ -52,14 +52,14 @@ class Grid {
 		}
 	}
 
-        createArtifact( imageId, x, y ) {
-                const imgElem = document.getElementById( imageId );
-                const dims = imgElem.dataset.dim.split( 'x' );
-                const w = ( this.tileSize * parseInt( dims[0] ) ) + 1;
-                const h = ( this.tileSize * parseInt( dims[1] ) ) + 1;
+       createArtifact( imageId, x, y ) {
+               const imgElem = document.getElementById( imageId );
+               const dims = imgElem.dataset.dim.split( 'x' );
+               const w = ( this.tileSize * parseInt( dims[0] ) ) + 2;
+               const h = ( this.tileSize * parseInt( dims[1] ) ) + 2;
 
 		// use coords and dimensions to copy data for what is under the artifact
-		const underlay = this.ctx.getImageData( x, y, w, h );
+               const underlay = this.ctx.getImageData( x, y, w, h );
 
 		this.artifacts.push( {
 			gridX: x,
@@ -175,10 +175,11 @@ class Grid {
 			)
 		} );
 
-		// replace artifact with underlay
-		if ( artifact ) {
-			this.ctx.putImageData( artifact.underlay, artifact.gridX, artifact.gridY );
-		}
+                // replace artifact with underlay and remove it from the list
+                if ( artifact ) {
+                        this.ctx.putImageData( artifact.underlay, artifact.gridX, artifact.gridY );
+                        this.artifacts = this.artifacts.filter( a => a !== artifact );
+                }
 	}
 
 	onDrop( e ) {
@@ -189,19 +190,23 @@ class Grid {
                 const dims = imgElem.dataset.dim.split( 'x' ).map( d => parseInt( d ) );
                 let coords;
 		
-		if ( this.snapToGrid ) {
-			// snap to grid
+                if ( this.snapToGrid ) {
+                        // snap to grid
                         coords = this.getTileCoords( e );
-                        this.ctx.clearRect( coords.x, coords.y, this.tileSize * dims[0] - 2, this.tileSize * dims[1] - 2 );
-		} else {
-			coords = this.getCursorCoords( e );
-			// image offset
-			coords.x = coords.x - ( e.dataTransfer.getData( 'grabbedX' ) * window.devicePixelRatio );
-			coords.y = coords.y - ( e.dataTransfer.getData( 'grabbedY' ) * window.devicePixelRatio );
-		}
+                } else {
+                        coords = this.getCursorCoords( e );
+                        // image offset
+                        coords.x = coords.x - ( e.dataTransfer.getData( 'grabbedX' ) * window.devicePixelRatio );
+                        coords.y = coords.y - ( e.dataTransfer.getData( 'grabbedY' ) * window.devicePixelRatio );
+                }
 
-                // create the artifact
-                this.createArtifact( imageId, coords.x, coords.y );
+                // create the artifact before clearing the grid so that the
+                // original grid lines can be restored when the icon is removed
+                this.createArtifact( imageId, coords.x - 1, coords.y - 1 );
+
+                if ( this.snapToGrid ) {
+                        this.ctx.clearRect( coords.x, coords.y, this.tileSize * dims[0] - 2, this.tileSize * dims[1] - 2 );
+                }
 
                 // determine natural aspect ratio in device pixels
                 let natW = imgElem.naturalWidth || imgElem.width;
