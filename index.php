@@ -6,20 +6,18 @@
         canvas {
             background: #f8f8f8;
             padding: 0;
-            margin: 0 auto;
             margin-bottom: 1rem;
             display: block;
         }
     </style>
 </head>
 <body>
-    <div class="container" style="padding-top:20px;">
+    <div class="container-fluid" style="padding:20px 0 0 0;">
         <div class="row">
-            <div class="col-md-4">
-                <center><img src="heroQuestLogo.png" width="400"></center>
-                <br>
+            <div class="col-md-3" style="margin:0 auto">
+                <img src="heroQuestLogo.png" class="mb-4" width="400" style="margin: 0 auto;" alt="HeroQuest Logo">
                 <input type="checkbox" id="snapToGrid" name="snapToGrid" onchange="toggleSnapToGrid();" value="true" checked="checked" />
-                <label for="snapToGrid">Snap to Grid (top left of token will snap to cursor square)</label>
+                <label for="snapToGrid">Snap to Grid</label>
                 <br><br>
 <?php
 $categories = array_filter(glob('icons/*'), 'is_dir');
@@ -58,7 +56,7 @@ foreach ($categories as $cat) {
 ?>
                 </div>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-9">
                 <canvas id="gameCanvas" ondragover="onDragOver(event);"></canvas>
             </div>
         </div>
