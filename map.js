@@ -227,10 +227,15 @@ class Grid {
                const offsetX = coords.x + ( ( this.tileSize * dims[0] - drawW ) / 2 );
                const offsetY = coords.y + ( ( this.tileSize * dims[1] - drawH ) / 2 );
 
-                // drawImage at the drop point using scaled dimensions
-                this.ctx.drawImage( imgElem, offsetX, offsetY, drawW, drawH );
+                // drawImage at the drop point using scaled dimensions and rotation
+                const rotation = parseFloat( e.dataTransfer.getData( 'rotation' ) || '0' );
+                this.ctx.save();
+                this.ctx.translate( offsetX + drawW / 2, offsetY + drawH / 2 );
+                this.ctx.rotate( rotation * Math.PI / 180 );
+                this.ctx.drawImage( imgElem, -drawW / 2, -drawH / 2, drawW, drawH );
+                this.ctx.restore();
                 e.dataTransfer.clearData();
-	}
+        }
 
 	onMouseDown( e ) {
 		// var mouseX = e.pageX - this.offsetLeft;
@@ -247,10 +252,13 @@ class Grid {
 }
 
 function onDragStart( e ) {
-	const coords = getCoordsOverImg( e );
-	e.dataTransfer.setData( 'image', e.target.id );
-	e.dataTransfer.setData( 'grabbedX', coords.x );
-	e.dataTransfer.setData( 'grabbedY', coords.y );
+        const coords = getCoordsOverImg( e );
+        const assetId = e.target.dataset.assetId || e.target.id;
+        const rotation = e.target.dataset.rotation || 0;
+        e.dataTransfer.setData( 'image', assetId );
+        e.dataTransfer.setData( 'rotation', rotation );
+        e.dataTransfer.setData( 'grabbedX', coords.x );
+        e.dataTransfer.setData( 'grabbedY', coords.y );
 }
 
 function toggleSnapToGrid() {
@@ -258,12 +266,35 @@ function toggleSnapToGrid() {
 }
   
 function getCoordsOverImg( e ) {
-	// get coords of cursor within the element
-	const rect = e.target.getBoundingClientRect();
-	const x = e.clientX - rect.left;
-	const y = e.clientY - rect.top;
+        // get coords of cursor within the element
+        const rect = e.target.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 	
-	return { x: x, y: y };
+        return { x: x, y: y };
+}
+
+function selectAsset( elem ) {
+        const preview = document.getElementById( 'previewImg' );
+        const rotateInput = document.getElementById( 'rotationInput' );
+        const dims = elem.dataset.dim.split( 'x' ).map( d => parseInt( d ) );
+        const size = grid ? grid.tileSize / window.devicePixelRatio : 35;
+
+        preview.src = elem.src;
+        preview.dataset.assetId = elem.id;
+        preview.dataset.dim = elem.dataset.dim;
+        preview.dataset.rotation = 0;
+        preview.style.width = ( size * dims[0] ) + 'px';
+        preview.style.height = ( size * dims[1] ) + 'px';
+        preview.style.transform = 'rotate(0deg)';
+        preview.style.display = 'inline';
+        rotateInput.value = 0;
+}
+
+function updatePreviewRotation( val ) {
+        const preview = document.getElementById( 'previewImg' );
+        preview.dataset.rotation = val;
+        preview.style.transform = `rotate(${val}deg)`;
 }
 
 document.addEventListener( 'DOMContentLoaded', () => {

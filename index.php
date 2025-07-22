@@ -56,7 +56,7 @@ ksort($categories);
                                                                 foreach ($files as $file) {
                                                                         $id = 'img' . $iconIndex++;
                                                                         ?>
-                                    <img draggable="true" ondragstart="onDragStart(event);" id="<?= $id ?>" class="artifact" width="33" data-dim="<?= $file['dimensions'] ?>" src="<?= $file['image'] ?>" title="<?= htmlspecialchars($file['title']) ?>">
+                                    <img draggable="true" ondragstart="onDragStart(event);" onclick="selectAsset(this);" id="<?= $id ?>" class="artifact" width="33" data-dim="<?= $file['dimensions'] ?>" src="<?= $file['image'] ?>" title="<?= htmlspecialchars($file['title']) ?>">
                                                                         <?php
                                                                 }
                                                                 ?>
@@ -66,6 +66,12 @@ ksort($categories);
                                         <?php
 				}
 				?>
+            </div>
+            <div id="previewBox" class="border mt-3 p-2 text-center" style="min-height:120px;">
+                <img id="previewImg" style="display:none;" draggable="true" ondragstart="onDragStart(event);">
+                <div class="mt-2">
+                    <input type="range" id="rotationInput" min="0" max="360" step="45" value="0" oninput="updatePreviewRotation(this.value)" style="width:100%;">
+                </div>
             </div>
         </div>
         <div class="col-md-9">
